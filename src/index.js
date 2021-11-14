@@ -1,12 +1,15 @@
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
+const { initDB, getTask } = require("./dataBase");
 const app = express();
+const apiTaskController = require("./controllers/api-task.controller")
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+initDB();
 
 app.use((req, _res, next) => {
   console.log("URL = ", req.url);
@@ -19,7 +22,7 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.use("/api/todos", apiTodoRouter);
+app.use("/api/task",apiTaskController);
 
 http.createServer(app).listen(3000, () => {
   console.log("Server is working on port 3000");
