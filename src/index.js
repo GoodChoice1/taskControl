@@ -3,7 +3,8 @@ const http = require("http");
 const cors = require("cors");
 const { initDB, getTask } = require("./dataBase");
 const app = express();
-const apiTaskController = require("./controllers/api-task.controller")
+const apiTaskController = require("./controllers/api-task.controller");
+const apiOrgsController = require("./controllers/api-orgs.controller");
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -22,7 +23,8 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.use("/api/task",apiTaskController);
+app.use("/api/task", apiTaskController);
+app.use("/api/orgs", apiOrgsController);
 
 http.createServer(app).listen(3000, () => {
   console.log("Server is working on port 3000");

@@ -6,6 +6,7 @@ const Equipment = require("./Equipment.model");
 const Organizations = require("./Organizations.model");
 const Workers = require("./Workers.model");
 const Tasks = require("./Tasks.model");
+const Contract_struct = require("./Contract-struct.model");
 
 class Persons extends Sequelize.Model {}
 
@@ -21,7 +22,7 @@ Persons.init(
       autoIncrement: false,
     },
     full_name: {
-      type: DataTypes.CHAR(150),
+      type: DataTypes.STRING(150),
       allowNull: false,
       defaultValue: null,
       comment: null,
@@ -39,7 +40,7 @@ Persons.init(
       autoIncrement: false,
     },
     work_position: {
-      type: DataTypes.CHAR(50),
+      type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: null,
       comment: null,
@@ -48,7 +49,7 @@ Persons.init(
       autoIncrement: false,
     },
     email: {
-      type: DataTypes.CHAR(100),
+      type: DataTypes.STRING(100),
       allowNull: false,
       defaultValue: null,
       comment: null,
@@ -88,12 +89,12 @@ Contracts.hasMany(Tasks);
 Tasks.belongsTo(Contracts, {foreignKey: "contract_number"});
 
 Equipment.belongsToMany(Contracts, {
-  through: "contract_structs",
+  through: Contract_struct,
   foreignKey: "equipment_id",
 });
 
 Contracts.belongsToMany(Equipment, {
-  through: "contract_structs",
+  through: Contract_struct,
   foreignKey: "contract_number",
 });
 

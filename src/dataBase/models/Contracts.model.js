@@ -42,7 +42,7 @@ Contracts.init(
       autoIncrement: false,
     },
     description: {
-      type: DataTypes.CHAR(250),
+      type: DataTypes.STRING(250),
       allowNull: false,
       defaultValue: null,
       comment: null,

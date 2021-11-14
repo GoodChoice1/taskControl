@@ -15,7 +15,7 @@ Equipment.init(
       autoIncrement: false,
     },
     name: {
-      type: DataTypes.CHAR(50),
+      type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: null,
       comment: "Название оборудования указанного в контракте\n",
@@ -24,7 +24,7 @@ Equipment.init(
       autoIncrement: false,
     },
     serial_number: {
-      type: DataTypes.CHAR(50),
+      type: DataTypes.STRING(50),
       allowNull: false,
       defaultValue: null,
       comment: null,

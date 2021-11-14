@@ -15,7 +15,7 @@ Organizations.init(
       autoIncrement: false,
     },
     director_full_name: {
-      type: DataTypes.CHAR(100),
+      type: DataTypes.STRING(100),
       allowNull: false,
       defaultValue: null,
       comment: null,
@@ -24,7 +24,7 @@ Organizations.init(
       autoIncrement: false,
     },
     fax_number: {
-      type: DataTypes.CHAR(13),
+      type: DataTypes.STRING(13),
       allowNull: true,
       defaultValue: null,
       comment: "Номер факса\n8-812-1234567",
@@ -33,7 +33,7 @@ Organizations.init(
       autoIncrement: false,
     },
     legal_name: {
-      type: DataTypes.CHAR(150),
+      type: DataTypes.STRING(150),
       allowNull: false,
       defaultValue: null,
       comment: null,
@@ -53,7 +53,7 @@ Organizations.init(
       unique: "organizations_ogrn_key",
     },
     post_number: {
-      type: DataTypes.CHAR(200),
+      type: DataTypes.STRING(200),
       allowNull: false,
       defaultValue: null,
       comment: null,
@@ -81,7 +81,7 @@ Organizations.init(
       unique: "organizations_kpp_key",
     },
     legal_adress: {
-      type: DataTypes.CHAR(200),
+      type: DataTypes.STRING(200),
       allowNull: false,
       defaultValue: null,
       comment: null,
@@ -90,7 +90,7 @@ Organizations.init(
       autoIncrement: false,
     },
     physical_addres: {
-      type: DataTypes.CHAR(200),
+      type: DataTypes.STRING(200),
       allowNull: false,
       defaultValue: null,
       comment: null,

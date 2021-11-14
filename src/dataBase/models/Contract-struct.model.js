@@ -1,45 +1,36 @@
 const { DataTypes, Sequelize } = require("sequelize");
 const { sequelize } = require("..");
 
-class Workers extends Sequelize.Model {}
+class Contract_struct extends Sequelize.Model {}
 
-Workers.init(
+Contract_struct.init(
   {
-    id: {
+    contract_number: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: null,
       comment: null,
-      primaryKey: true,
-      field: "id",
+      primaryKey: false,
+      field: "contract_number",
       autoIncrement: false,
     },
-    work_start_date: {
-      type: DataTypes.DATEONLY,
+    equipment_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: null,
       comment: null,
       primaryKey: false,
-      field: "work_start_date",
+      field: "equipment_id",
       autoIncrement: false,
-    },
-    login: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-      defaultValue: null,
-      comment: null,
-      primaryKey: false,
-      field: "login",
-      autoIncrement: false,
-      unique: "workers_login_key",
     },
   },
   {
     sequelize: sequelize,
     underscored: true,
-    modelName: "workers",
+    modelName: "contract_structs",
     timestamps: false,
   }
 );
 
-module.exports = Workers;
+
+module.exports = Contract_struct;

@@ -24,7 +24,7 @@ Tasks.init(
       autoIncrement: false,
     },
     priority: {
-      type: DataTypes.CHAR(7),
+      type: DataTypes.STRING(7),
       allowNull: false,
       defaultValue: null,
       comment: "Низкий, Средний или Высокий",
