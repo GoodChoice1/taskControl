@@ -45,27 +45,27 @@ Persons.init(
   }
 );
 
+Workers.belongsTo(Persons, { foreignKey: "person_id" });
 Persons.hasOne(Workers);
-Workers.belongsTo(Persons, {foreignKey: "person_id"})
 
+Contact_persons.belongsTo(Persons, { foreignKey: "person_id" });
 Persons.hasOne(Contact_persons);
-Contact_persons.belongsTo(Persons, {foreignKey: "person_id"});
 
+Contact_persons.belongsTo(Organizations, { foreignKey: "org_id" });
 Organizations.hasMany(Contact_persons);
-Contact_persons.belongsTo(Organizations, {foreignKey: "org_id"});
 
+Contracts.belongsTo(Organizations, { foreignKey: "org_id" });
 Organizations.hasMany(Contracts);
-Contracts.belongsTo(Organizations, {foreignKey: "org_id"})
 
+Tasks.belongsTo(Workers, { foreignKey: "person_id_author" });
+Tasks.belongsTo(Workers, { foreignKey: "person_id_performer" });
 Workers.hasMany(Tasks);
-Tasks.belongsTo(Workers, {foreignKey: "person_id_author"});
-Tasks.belongsTo(Workers, {foreignKey: "person_id_performer"});
 
+Tasks.belongsTo(Contact_persons, { foreignKey: "contact_person_id" });
 Contact_persons.hasMany(Tasks);
-Tasks.belongsTo(Contact_persons, {foreignKey: "contact_person_id"});
 
+Tasks.belongsTo(Contracts, { foreignKey: "contract_number" });
 Contracts.hasMany(Tasks);
-Tasks.belongsTo(Contracts, {foreignKey: "contract_number"});
 
 Equipment.belongsToMany(Contracts, {
   through: Contract_struct,
@@ -76,6 +76,5 @@ Contracts.belongsToMany(Equipment, {
   through: Contract_struct,
   foreignKey: "contract_number",
 });
-
 
 module.exports = Persons;

@@ -12,9 +12,9 @@ const sequelize = new Sequelize({
 async function initDB() {
   try {
     await sequelize.authenticate();
-    await sequelize.dropSchema("public", {});
-    await sequelize.createSchema("public", {});
-    await sequelize.sync();
+    // await sequelize.dropSchema("public", {});
+    // await sequelize.createSchema("public", {});
+    // await sequelize.sync();
     console.log("Connected to DB");
   } catch (error) {
     console.error("Can not connect ", error);

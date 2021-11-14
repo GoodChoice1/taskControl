@@ -8,10 +8,12 @@ Contract_struct.init(
     contract_number: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: false,
     },
     equipment_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: false,
     },
   },
   {

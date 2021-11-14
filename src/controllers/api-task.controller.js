@@ -1,25 +1,27 @@
 const { Router } = require("express");
+const ErrorResponse = require("../classes/error-response");
 const Tasks = require("../dataBase/models/Tasks.model");
+const { asyncHandler } = require("../middlewares/middlewares");
 
 const router = Router();
 
 function initRoutes() {
-  router.get("/", getAllTasks);
-  router.get("/:id", getTaskById);
-  router.post("/", createTask);
+  router.get("/", asyncHandler(getAllTasks));
+  router.get("/:id", asyncHandler(getTaskById));
+  router.post("/", asyncHandler(createTask));
 }
 
 async function getAllTasks(req, res, next) {
   let task_list = await Tasks.findAll();
-  if (!task_list) throw new Error("Тасков нет");
+  if (task_list.length == 0) throw new ErrorResponse("Тасков нет", 404);
   res.status(200).json(task_list);
 }
 
 async function getTaskById(req, res, next) {
-    let task = await Tasks.findByPk(req.params.id);
-    if (!task) throw new Error("Таска нет");
-    res.status(200).json(task);
-  }
+  let task = await Tasks.findByPk(req.params.id);
+  if (!task) throw new ErrorResponse("Таска нет", 404);
+  res.status(200).json(task);
+}
 
 async function createTask(req, res, next) {
   let task = await Tasks.create({
