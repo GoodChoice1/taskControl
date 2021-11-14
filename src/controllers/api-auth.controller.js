@@ -55,6 +55,7 @@ async function createUser(req, res, next) {
   res.status(200).json(worker, person);
 }
 
+//попытка логина, в комменте хеш пароля
 async function login(req, res, next) {
   //   const msgBuffer = new TextEncoder().encode(req.headers.password);
   //   const shaPass = await crypto.subtle.digest("SHA-256", msgBuffer);

@@ -1,11 +1,14 @@
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
+const { initDB } = require("./dataBase");
 const app = express();
 const apiTaskController = require("./controllers/api-task.controller");
 const apiOrgsController = require("./controllers/api-orgs.controller");
 const apiAuthController = require("./controllers/api-auth.controller")
 const { notFound, errorHandler } = require("./middlewares/middlewares");
+
+initDB();
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
