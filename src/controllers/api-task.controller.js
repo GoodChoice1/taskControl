@@ -9,10 +9,13 @@ function initRoutes() {
   router.get("/", asyncHandler(getAllTasks));
   router.get("/:id", asyncHandler(getTaskById));
   router.post("/", asyncHandler(createTask));
+  router.patch("/:id", asyncHandler(changeTask));
 }
 
 async function getAllTasks(req, res, next) {
-  let task_list = await Tasks.findAll();
+  let task_list = await Tasks.findAll({
+    attributes: ["id", "person_id_performer", "person_id_author", "task"],
+  });
   if (task_list.length == 0) throw new ErrorResponse("Тасков нет", 404);
   res.status(200).json(task_list);
 }
@@ -20,6 +23,17 @@ async function getAllTasks(req, res, next) {
 async function getTaskById(req, res, next) {
   let task = await Tasks.findByPk(req.params.id);
   if (!task) throw new ErrorResponse("Таска нет", 404);
+  res.status(200).json(task);
+}
+
+async function changeTask(req, res, next) {
+  let task = await Tasks.findByPk(req.params.id);
+  if (!task) throw new ErrorResponse("Таска нет", 404);
+  task = await Tasks.update(req.headers, {
+    where: {
+      id: req.params.id,
+    },
+  });
   res.status(200).json(task);
 }
 

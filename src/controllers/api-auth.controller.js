@@ -49,9 +49,8 @@ async function createUser(req, res, next) {
   const msgBuffer = new TextEncoder().encode(req.headers.password);
   const shaPass = await crypto.subtle.digest("SHA-256", msgBuffer);
   await sequelize.query(`CREATE USER ${req.headers.login} PASSWORD ${shaPass}`);
-  if (req.headers.role == "Менеджер")
-    await sequelize.query(`GRANT manager TO ${req.headers.login}`);
-  else sequelize.query(`GRANT worker TO ${req.headers.login}`);
+  if (req.headers.role == "Менеджер") await sequelize.query(`GRANT manager TO ${req.headers.login}`);
+  else await sequelize.query(`GRANT worker TO ${req.headers.login}`);
   res.status(200).json(worker, person);
 }
 
