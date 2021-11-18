@@ -58,14 +58,7 @@ async function createUser(req, res, next) {
 async function login(req, res, next) {
   //   const msgBuffer = new TextEncoder().encode(req.headers.password);
   //   const shaPass = await crypto.subtle.digest("SHA-256", msgBuffer);
-  sequelize = new Sequelize({
-    port: 5432,
-    dialect: "postgres",
-    host: "localhost",
-    database: "myPracticeDb",
-    username: req.headers.login,
-    password: req.headers.password,
-  });
+  
   await sequelize.authenticate();
   console.log("Connected to DB");
   const [results] = await sequelize.query("select current_user");

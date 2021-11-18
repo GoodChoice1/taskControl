@@ -4,7 +4,7 @@ const cors = require("cors");
 const { initDB } = require("./dataBase");
 const app = express();
 const apiTaskController = require("./controllers/api-task.controller");
-const apiOrgsController = require("./controllers/api-orgs.controller");
+const apiRestController = require("./controllers/api-rest.controller");
 const apiAuthController = require("./controllers/api-auth.controller")
 const { notFound, errorHandler } = require("./middlewares/middlewares");
 
@@ -26,7 +26,7 @@ app.use((req, _res, next) => {
 });
 
 app.use("/api/task", apiTaskController);
-app.use("/api/orgs", apiOrgsController);
+app.use("/api/rest", apiRestController);
 app.use("/api/auth", apiAuthController);
 
 app.use(notFound);
