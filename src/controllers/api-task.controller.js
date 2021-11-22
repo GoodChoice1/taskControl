@@ -127,20 +127,24 @@ async function createTask(req, res, next) {
     user: req.body.login,
     password: req.body.password,
   });
-
+ 
+    let result;
   try {
     client.connect();
+    result = await client.query('SELECT MAX(id)+1 AS numb FROM tasks');
   } catch (err) {
     throw new ErrorResponse(err, 400);
   }
 
+  result = result.rows[0].numb
+  console.log(result);
   const query = `
-  INSERT INTO tasks (person_id_performer,person_id_author,contact_person_id,contract_number,task,priority,creation_date,expiration_date,completion_date)
-  VALUES (${req.body.person_id_performer},${req.body.person_id_author},${req.body.contact_person_id},${req.body.contract_number},${req.body.task},${req.body.priority},${req.body.creation_date},${req.body.expiration_date},${req.body.completion_date})
+  INSERT INTO tasks (id,person_id_performer,person_id_author,contact_person_id,contract_number,task,priority,creation_date,expiration_date,completion_date)
+  VALUES (${req.body.taskid},${req.body.person_id_performer},${req.body.person_id_author},${req.body.contact_person_id},${req.body.contract_number},${req.body.task},${req.body.priority},${req.body.creation_date},${req.body.expiration_date},${req.body.completion_date})
   `;
 
   try {
-    result = await client.query(query);
+    await client.query(query);
   } catch (err) {
     throw new ErrorResponse(err, 400);
   } finally {

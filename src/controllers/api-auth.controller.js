@@ -30,7 +30,7 @@ async function createUser(req, res, _next) {
   let query = `
   SELECT * 
   FROM persons 
-  WHERE email = '${req.body.email}' OR phone_number = ${req.body.phone_number}
+  WHERE email = '${req.body.email}' OR phone_number = ${req.body.phone_number} OR id = ${req.body.workerId}
   `;
   let result = [];
   try {
@@ -40,12 +40,12 @@ async function createUser(req, res, _next) {
   }
 
   result = result.rows;
-  if (result.length != 0) throw new ErrorResponse("Человек с таким email или телефоном уже существует",400);
+  if (result.length != 0) throw new ErrorResponse("Человек с таким email или телефоном или id уже существует",400);
 
   query = `
    SELECT * 
    FROM workers 
-   WHERE login = '${req.body.regLogin}'
+   WHERE login = '${req.body.regLogin}' OR id = ${req.body.workerId}
    `;
 
   try {
@@ -55,11 +55,11 @@ async function createUser(req, res, _next) {
   }
 
   result= result.rows;
-  if (result.length != 0) throw new ErrorResponse("Логин занят", 400);
+  if (result.length != 0) throw new ErrorResponse("Логин или данный id занят", 400);
 
   query = `
-  INSERT INTO persons (full_name,phone_number,work_position,email)
-  VALUES ('${req.body.full_name}',${req.body.phone_number},'${req.body.role}','${req.body.email}');
+  INSERT INTO persons (id,full_name,phone_number,work_position,email)
+  VALUES (${req.body.personId},'${req.body.full_name}',${req.body.phone_number},'${req.body.role}','${req.body.email}');
   SELECT * FROM persons WHERE email = '${req.body.email}';
   
   `;
@@ -74,8 +74,8 @@ async function createUser(req, res, _next) {
   const shaPass = sha256(req.body.regPassword)
   console.log(result);
   query = `
-  INSERT INTO workers (login,work_start_date,person_id)
-  VALUES ('${req.body.regLogin}','${req.body.work_start_date}',${result});
+  INSERT INTO workers (id,login,work_start_date,person_id)
+  VALUES (${req.body.workerId},'${req.body.regLogin}','${req.body.work_start_date}',${result});
   CREATE USER ${req.body.regLogin} PASSWORD '${shaPass}';
   `;
 
