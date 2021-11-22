@@ -1,68 +1,103 @@
 const { Router } = require("express");
 const { asyncHandler } = require("../middlewares/middlewares");
-const Persons = require("../dataBase/models/Persons.model");
 const ErrorResponse = require("../classes/error-response");
-let { sequelize } = require("../dataBase");
-const Sequelize = require("sequelize");
+const { Client } = require("pg");
+const sha256 = require('js-sha256');
 
 const router = Router();
 
 function initRoutes() {
   router.post("/register", asyncHandler(createUser));
-  router.post("/login", asyncHandler(login));
 }
 
-// Добавляет пользователя в бд и создает по его логину юзера с паролем передающимся в хешированом виде
-async function createUser(req, res, next) {
-  let person = await Persons.findOne({
-    where: {
-      [Op.or]: {
-        email: req.headers.email,
-        phone_number: req.headers.phone_number,
-      },
-    },
+async function createUser(req, res, _next) {
+  if (req.body.role != "Менеджер" && req.body.role != "Рядовой сотрудник") throw new ErrorResponse("Неверная роль", 400);
+
+  const client = new Client({
+    port: 5432,
+    host: "localhost",
+    database: "myPracticeDb",
+    user: req.body.login,
+    password: req.body.password,
   });
 
-  let worker = await Worker.findOne({
-    where: {
-      login: req.headers.login,
-    },
-  });
+  try {
+    client.connect();
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
 
-  if (person) throw new ErrorResponse("Человек с таким email или телефоном уже существует",400);
-  if (worker) throw new ErrorResponse("Логин занят", 400);
-  if (req.headers.role != "Менеджер" && req.headers.role != "Рядовой сотрудник") throw new ErrorResponse("Неверная роль", 400);
+  let query = `
+  SELECT * 
+  FROM persons 
+  WHERE email = '${req.body.email}' OR phone_number = ${req.body.phone_number}
+  `;
+  let result = [];
+  try {
+    result = await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
 
-  person = await Persons.create({
-    full_name: req.headers.full_name,
-    phone_number: req.headers.phone_number,
-    work_position: req.headers.work_position,
-    email: req.headers.email,
-  });
+  result = result.rows;
+  if (result.length != 0) throw new ErrorResponse("Человек с таким email или телефоном уже существует",400);
 
-  worker = await Worker.create({
-    login: req.headers.login,
-    work_start_date: req.headers.work_start_date,
-    person_id: person.id,
-  });
+  query = `
+   SELECT * 
+   FROM workers 
+   WHERE login = '${req.body.regLogin}'
+   `;
 
-  const msgBuffer = new TextEncoder().encode(req.headers.password);
-  const shaPass = await crypto.subtle.digest("SHA-256", msgBuffer);
-  await sequelize.query(`CREATE USER ${req.headers.login} PASSWORD ${shaPass}`);
-  if (req.headers.role == "Менеджер") await sequelize.query(`GRANT manager TO ${req.headers.login}`);
-  else await sequelize.query(`GRANT worker TO ${req.headers.login}`);
-  res.status(200).json(worker, person);
-}
+  try {
+    result = await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
 
-//попытка логина, в комменте хеш пароля
-async function login(req, res, next) {
-  //   const msgBuffer = new TextEncoder().encode(req.headers.password);
-  //   const shaPass = await crypto.subtle.digest("SHA-256", msgBuffer);
+  result= result.rows;
+  if (result.length != 0) throw new ErrorResponse("Логин занят", 400);
+
+  query = `
+  INSERT INTO persons (full_name,phone_number,work_position,email)
+  VALUES ('${req.body.full_name}',${req.body.phone_number},'${req.body.role}','${req.body.email}');
+  SELECT * FROM persons WHERE email = '${req.body.email}';
   
-  await sequelize.authenticate();
-  console.log("Connected to DB");
-  const [results] = await sequelize.query("select current_user");
-  res.status(200).json(results);
+  `;
+
+  try {
+    result = await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+
+  result = result[1].rows[0].id
+  const shaPass = sha256(req.body.regPassword)
+  console.log(result);
+  query = `
+  INSERT INTO workers (login,work_start_date,person_id)
+  VALUES ('${req.body.regLogin}','${req.body.work_start_date}',${result});
+  CREATE USER ${req.body.regLogin} PASSWORD '${shaPass}';
+  `;
+
+  try {
+    await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+
+  if (req.headers.role == "manager")
+    query = `GRANT managers TO ${req.body.regLogin}`;
+  else query = `GRANT workers TO ${req.body.regLogin}`;
+
+  try {
+    await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  } finally {
+    client.end();
+  }
+
+  res.status(200).json("Succesfully created user");
 }
 
 initRoutes();
