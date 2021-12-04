@@ -1,0 +1,59 @@
+
+#main{
+  font-family: Comic Sans MS;
+  background-color:#b3cdff;
+  display: flex;
+  text-align: center;
+}
+
+.link{
+  padding:4px 12px 4px 12px;
+  margin: 4px;
+  float: left;
+  text-decoration: none;
+  color: black;
+}
+
+.link:hover{
+  background: #b3cdff;
+  border-radius: 12px;
+}
+
+.link.router-link-exact-active {
+  background: #ccdeff;
+  border-radius: 12px;
+}
+
+#nav {
+  width: 99%;
+  background:#83aeff;
+  border-radius: 8px;
+  box-shadow: 6px 8px 8px gray ;
+  border: black solid 2px;
+  position: fixed;
+  z-index: 100;
+}
+
+.form-field input  {
+  border: 2px solid black;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 5px;
+  height: 20px;
+}
+
+.submit-btn{
+  border: 2px solid black;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 5px;
+  font-family: Comic Sans MS;
+}
+
+.submit-btn:hover{
+  background: #cccccc;
+}
+
+.page-container{
+  padding: 56px 0px 0px 0px;
+}
