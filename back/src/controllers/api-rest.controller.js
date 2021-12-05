@@ -62,6 +62,7 @@ async function getContacts(req, res, next) {
   let query = `
   SELECT * FROM contact_persons
   JOIN persons p ON p.id = person_id
+  JOIN organizations o ON o.id = org_id
   `;
   try {
     result = await client.query(query);
@@ -124,6 +125,7 @@ async function getUsers(req, res, next) {
   let query = `
   SELECT * FROM workers
   JOIN persons p ON p.id = person_id
+  WHERE work_position = 'Рядовой сотрудник' OR login = '${req.headers.login}'
   `;
   try {
     result = await client.query(query);

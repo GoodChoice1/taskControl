@@ -124,25 +124,44 @@ async function createTask(req, res, next) {
     port: 5432,
     host: "localhost",
     database: "myPracticeDb",
-    user: req.body.login,
-    password: req.body.password,
+    user: req.headers.login,
+    password: req.headers.password,
   });
- 
-    let result;
+
   try {
     client.connect();
-    result = await client.query('SELECT MAX(id)+1 AS numb FROM tasks');
   } catch (err) {
     throw new ErrorResponse(err, 400);
   }
 
-  result = result.rows[0].numb
-  console.log(result);
-  const query = `
-  INSERT INTO tasks (id,person_id_performer,person_id_author,contact_person_id,contract_number,task,priority,creation_date,expiration_date,completion_date)
-  VALUES (${req.body.taskid},${req.body.person_id_performer},${req.body.person_id_author},${req.body.contact_person_id},${req.body.contract_number},${req.body.task},${req.body.priority},${req.body.creation_date},${req.body.expiration_date},${req.body.completion_date})
-  `;
+  var query = `
+  SELECT id 
+  FROM workers
+  WHERE login = '${req.headers.login}'
+  `
+  try {
+    var result = await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
 
+  let authorId = result.rows[0].id
+  try {
+    result = await client.query("select current_date");
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+  let date =result.rows[0].current_date
+  let day = '';
+  if (parseInt(date.getDate())<10){
+    day = 0;
+  }
+  let realDate = parseInt(date.getYear())+1900 + "-" + (parseInt(date.getMonth())+1) + "-" + day + date.getDate();
+  console.log(req.body.task)
+  query = `
+  INSERT INTO tasks (person_id_performer,person_id_author,contact_person_id,contract_number,task,priority,creation_date,expiration_date)
+  VALUES (${req.body.person_id_performer},${authorId},${req.body.contact_person_id},${req.body.contract_number},'${req.body.task}','${req.body.priority}','${realDate}','${req.body.expiration_date}')
+  `;
   try {
     await client.query(query);
   } catch (err) {
@@ -150,8 +169,7 @@ async function createTask(req, res, next) {
   } finally {
     client.end();
   }
-
-  res.status(200).json({ message: "Insert succesfull" });
+  res.status(200).json("Insert succesfull");
 }
 
 initRoutes();
