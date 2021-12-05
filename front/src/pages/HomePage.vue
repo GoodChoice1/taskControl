@@ -1,9 +1,23 @@
 <template>
     <div class="main">
         <ul>
-            <li v-for="taskItem in tasksList" :key="taskItem.id" class="todo">
-                    {{taskItem}}
-                </li>
+            <li v-for="taskItem in taskList" :key="taskItem.id" class="todo">
+                <a @click="redirect(taskItem.id)">
+                    <div>
+                        Задача: {{taskItem.task}}
+                    </div>
+                    <div v-if="taskItem.expiration_date">
+                        истекает {{taskItem.expiration_date}}
+                    </div>
+                    <div v-else>
+                        бессрочное
+                    </div>
+                    <div>
+                        Приоритет: {{taskItem.priority}}
+                    </div>
+                    <br/>
+                </a>
+            </li>
         </ul>
     </div>
 </template>
@@ -13,7 +27,7 @@ import { fetchTaskListUndone } from '@/netClient/dataService'
 export default {
     name: 'HomePage',
     data: () =>({
-        tasksList: [],
+        taskList: [],
     }),
     async mounted(){
         this.fetchTaskList(); 
@@ -21,10 +35,14 @@ export default {
     methods: {
         async fetchTaskList(){
             try {
-                this.tasksList = await fetchTaskListUndone()
+                this.taskList = await fetchTaskListUndone()
             } catch (error) {
                 console.error({ error });
             }
+        },
+        async redirect(id){
+            sessionStorage.setItem('id',id)
+            this.$router.push('/task');
         }
     }
 }

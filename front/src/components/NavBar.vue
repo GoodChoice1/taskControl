@@ -6,14 +6,20 @@
       <router-link class="link" to ="/done">
         Список выполненных заданий
       </router-link>
-      <router-link class="link" to ="/create">
+      <router-link class="link" to ="/task">
+        Задание
+      </router-link>
+      <router-link v-if="isManager() || isAdmin()" class="link" to ="/create">
         Создать задание
       </router-link>
       <router-link class="link" to ="/clients">
         Клиенты
       </router-link>
-      <router-link class="link" to ="/register">
+      <router-link v-if="isAdmin()" class="link" to ="/register">
         Регистрация пользователя
+      </router-link>
+      <router-link class="link" to ="/report">
+        Отчёт
       </router-link>
       <a class="link" @click="onLogoutClicked">
         Выход
@@ -28,14 +34,21 @@ export default {
   methods: {
     async onLogoutClicked(){
             try {
-                localStorage.removeItem('login');
-                localStorage.removeItem('userRole');
-                localStorage.removeItem('password');
+                sessionStorage.removeItem('login');
+                sessionStorage.removeItem('userRole');
+                sessionStorage.removeItem('password');
+                sessionStorage.removeItem('id')
                 this.$router.push('/login');
             } catch (error) {
                 console.error({ error });
             }
-        }
+    },
+    isAdmin(){
+      return sessionStorage.userRole == 'Администратор'
+    },
+    isManager(){
+      return sessionStorage.userRole == 'Менеджер'
+    },
   }
 }
 </script>

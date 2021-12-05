@@ -8,9 +8,9 @@ export async function login(login, password) {
       login,
       password,
     });
-    localStorage.login = login;
-    localStorage.password = password;
-    localStorage.userRole = responce.data;
+    sessionStorage.login = login;
+    sessionStorage.password = password;
+    sessionStorage.userRole = responce.data;
   } catch (error) {
     console.log({ error });
     throw error;
@@ -27,8 +27,8 @@ export async function register(
 ) {
   try {
     regPassword = sha256(regPassword);
-    let login = localStorage.login;
-    let password = localStorage.password;
+    let login = sessionStorage.login;
+    let password = sessionStorage.password;
     const responce = await http.post("/auth/register", {
       login,
       password,
@@ -48,10 +48,10 @@ export async function register(
 
 export async function fetchTaskListUndone() {
   try {
-    const responce = await http.get("/task/", {
+    let responce = await http.get("/task/", {
       headers: {
-        login: localStorage.login,
-        password: localStorage.password,
+        login: sessionStorage.login,
+        password: sessionStorage.password,
       },
     });
     for (let i = 0; i < responce.data.length; i++) {
@@ -66,13 +66,13 @@ export async function fetchTaskListUndone() {
 
 export async function fetchTaskListDone() {
   try {
-    const responce = await http.get("/task/", {
+    let responce = await http.get("/task/", {
       headers: {
-        login: localStorage.login,
-        password: localStorage.password,
+        login: sessionStorage.login,
+        password: sessionStorage.password,
       },
     });
-    for (let i = 0; i < responce.data.length; i++) {
+    for (let i = responce.data.length-1; i > -1; i--) {
       if (!responce.data[i].completion_date) responce.data.splice(i, 1);
     }
     return responce.data;
@@ -86,8 +86,8 @@ export async function fetchUserList() {
   try {
     const responce = await http.get("/rest/users", {
       headers: {
-        login: localStorage.login,
-        password: localStorage.password,
+        login: sessionStorage.login,
+        password: sessionStorage.password,
       },
     });
     return responce.data;
@@ -101,8 +101,8 @@ export async function fetchContactsList() {
   try {
     const responce = await http.get("/rest/contPersons", {
       headers: {
-        login: localStorage.login,
-        password: localStorage.password,
+        login: sessionStorage.login,
+        password: sessionStorage.password,
       },
     });
     return responce.data;
@@ -116,8 +116,8 @@ export async function fetchUrList() {
   try {
     let responce = await http.get("/rest/orgs", {
       headers: {
-        login: localStorage.login,
-        password: localStorage.password,
+        login: sessionStorage.login,
+        password: sessionStorage.password,
       },
     });
     return responce.data;
@@ -148,11 +148,50 @@ export async function createTask(
       },
       {
         headers: {
-          login: localStorage.login,
-          password: localStorage.password,
+          login: sessionStorage.login,
+          password: sessionStorage.password,
         },
       }
     );
+    return responce.data;
+  } catch (error) {
+    console.log({ error });
+    throw error;
+  }
+}
+
+export async function getReport(left, right) {
+  try {
+    let responce = await http.get(
+      "/rest/report",
+      {
+        headers: {
+          login: sessionStorage.login,
+          password: sessionStorage.password,
+          left,
+          right
+        },
+      }
+    );
+    return responce.data;
+  } catch (error) {
+    console.log({ error });
+    throw error;
+  }
+}
+
+export async function fetchTaskById() {
+  try {
+    let responce = await http.get(
+      "/task/" + sessionStorage.id,
+      {
+        headers: {
+          login: sessionStorage.login,
+          password: sessionStorage.password,
+        },
+      }
+    );
+    console.warn(responce.data)
     return responce.data;
   } catch (error) {
     console.log({ error });

@@ -2,10 +2,10 @@
     <div class="main">
         <ul>
             <li v-for="taskItem in taskList" :key="taskItem.id" class="todo">
-                    <a @click="redirect(taskItem.id)">
-                        {{taskItem}}
-                    </a>
-                </li>
+                <a @click="redirect(taskItem.id)">
+                    Задание - {{taskItem.task}}, было выполнено {{taskItem.completion_date}}
+                </a>
+            </li>
         </ul>
     </div>
 </template>
@@ -27,6 +27,10 @@ export default {
             } catch (error) {
                 console.error({ error });
             }
+        },
+        async redirect(id){
+            sessionStorage.setItem('id',id)
+            this.$router.push('/task');
         }
     }
 }

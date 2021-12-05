@@ -70,3 +70,12 @@
 .page-container{
   padding: 56px 0px 0px 0px;
 }
+
+.input {
+  width: 200px;
+  height: 15px;
+}
+
+.select{
+  width: 220px;
+}

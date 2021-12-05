@@ -3,12 +3,12 @@
 
     <div class="form-field">
         <label for="task">Задание<br/></label>
-        <textarea v-model="task" id="task" type="message" required> </textarea>
+        <textarea v-model="task" id="task" class="input" type="message" required> </textarea>
     </div>
 
     <div class="form-field">
         <label for="performer">Исполнитель<br/></label>
-        <select v-model="performer" id="performer">
+        <select v-model="performer" class="select" id="performer">
         <option v-for="userItem in userList" :key="userItem.id">
             {{userItem.full_name}}
         </option>
@@ -17,7 +17,7 @@
 
     <div class="form-field">
         <label for="contact">Контактное лицо (ID)<br/></label>
-        <select v-model="contact" id="contact">
+        <select v-model="contact" class="select" id="contact">
         <option v-for="contPers in contractPersonsList" :key="contPers.id">
             {{contPers.full_name}}, {{contPers.legal_name}}
         </option>
@@ -26,12 +26,12 @@
 
     <div class="form-field">
         <label for="contract">Номер контракта (ID)<br/></label>
-        <input v-model="contract" id="contract" type="number">
+        <input v-model="contract" class="input" id="contract" type="number">
     </div>
 
     <div class="form-field">
         <label for="priority">Приоритет<br/></label>
-        <select v-model="priority" id="priority">
+        <select v-model="priority" class="select" id="priority">
                 <option>Высокий</option>
                 <option>Средний</option>
                 <option>Низкий</option>
@@ -40,7 +40,7 @@
 
     <div class="form-field">
         <label for="date">Дата истечения срока<br/></label>
-        <input v-model="date" id="date" type="date" required>
+        <input v-model="date" id="date" class="input" type="date">
     </div>
 
     <button class="submit-btn" type="submit">
@@ -90,20 +90,18 @@ export default {
                         break;
                     }
                 }
+                let date = null
+                if (this.date) date = "'" +this.date +"'";
+                let contractId = null
+                if (this.contract) contractId = this.contract
                 let result = await createTask(
                     this.performer,
                     this.contact,
-                    this.contract,
+                    contractId,
                     this.task.trim(),
                     this.priority,
-                    this.date
+                    date
                 ,)
-                document.getElementById("performer").value = '';
-                document.getElementById("contact").value = '';
-                document.getElementById("contract").value = '';
-                document.getElementById("task").value = '';
-                document.getElementById("priority").value = '';
-                document.getElementById("date").value = '';
                 alert(result)
             } catch (error) {
                 console.error({ error });

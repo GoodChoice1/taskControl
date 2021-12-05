@@ -58,6 +58,24 @@ const routes = [
     },
     component: () => import("@/pages/ClientsPage.vue"),
   },
+  {
+    path: "/report",
+    name: "report",
+    meta: {
+      title: "Отчёт",
+      layout: "main-layout",
+    },
+    component: () => import("@/pages/ReportPage.vue"),
+  },
+  {
+    path: "/task",
+    name: "task",
+    meta: {
+      title: "Задание",
+      layout: "main-layout",
+    },
+    component: () => import("@/pages/TaskPage.vue"),
+  },
 ];
 
 const router = new VueRouter({
@@ -67,7 +85,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const { userRole } = localStorage;
+  const { userRole } = sessionStorage;
   if (userRole || to.name == "login") {
     if ( to.name == "login"){
       next();

@@ -1,4 +1,4 @@
-const { Router } = require("express");
+const { Router, response } = require("express");
 const { asyncHandler } = require("../middlewares/middlewares");
 const ErrorResponse = require("../classes/error-response");
 const { Client } = require("pg");
@@ -27,7 +27,7 @@ async function getAllOrgs(req, res, next) {
     throw new ErrorResponse(err, 400);
   }
 
-  let result = [];
+  let result = true;
   let query = `
   SELECT * FROM organizations
   `;
@@ -35,12 +35,75 @@ async function getAllOrgs(req, res, next) {
     result = await client.query(query);
   } catch (err) {
     throw new ErrorResponse(err, 400);
+  }
+
+  result = result.rows;
+  if (result.length == 0) throw new ErrorResponse("Нет клиентов", 404);
+  
+  let legalClientList = result
+  try {
+    result = await client.query(`SELECT * 
+    FROM contact_persons c 
+    JOIN persons p ON c.person_id = p.id
+    `);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+  let contList = result.rows
+
+  for (let i =0;i<legalClientList.length; i++){
+    legalClientList[i].contactPersList = [];
+    for (let j =0;j<contList.length; j++){
+      if (legalClientList[i].id == contList[j].org_id){
+        legalClientList[i].contactPersList.push(contList[j]);
+      }
+    }
+  }
+
+  try {
+    result = await client.query(`SELECT * 
+    FROM contracts
+    `);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  } 
+
+  let contractsList = result.rows
+
+  for (let i =0;i<legalClientList.length; i++){
+    legalClientList[i].contractList = [];
+    for (let j =0;j<contractsList.length; j++){
+      if (legalClientList[i].id == contractsList[j].org_id){
+        legalClientList[i].contractList.push(contractsList[j]);
+      }
+    }
+  }
+
+  try {
+    result = await client.query(`
+    SELECT * 
+      FROM contract_structs cs
+      JOIN equipment e ON e.id = cs.equipment_id 
+    `);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
   } finally {
     client.end();
   }
-  result = result.rows;
-  if (result.length == 0) throw new ErrorResponse("Нет клиентов", 404);
-  res.status(200).json(result);
+  let equipmentList = result.rows
+
+  for (let i =0;i<legalClientList.length; i++){
+    for (let j =0;j<legalClientList[i].contractList.length; j++){
+      legalClientList[i].contractList[j].eqList = [];
+      for (let k =0;k<equipmentList.length; k++){
+        if (legalClientList[i].contractList[j].contract_number == equipmentList[k].contract_number){
+          legalClientList[i].contractList[j].eqList.push(equipmentList[k]);
+        }
+      }
+    }
+  }
+
+  res.status(200).json(legalClientList);
 }
 
 async function getContacts(req, res, next) {
@@ -91,8 +154,17 @@ async function getReport(req, res, next) {
     throw new ErrorResponse(err, 400);
   }
 
-  const query = `SELECT (generateXls(${req.body.left},${req.body.right},${req.body.id}));`;
-  let result = [];
+  let result = true;
+
+  try {
+    result = await client.query(`SELECT id FROM workers WHERE login = '${req.headers.login}'`);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+
+  result = result.rows[0].id
+
+  const query = `SELECT (generateXls('${req.headers.left}','${req.headers.right}',${result}));`;
 
   try {
     result = await client.query(query);
