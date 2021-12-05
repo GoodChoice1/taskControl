@@ -6,7 +6,7 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    name: "HomePage",
+    name: "home",
     meta: {
       title: "Список дел",
       layout: "main-layout",
@@ -64,6 +64,31 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const { userRole } = localStorage;
+  if (userRole || to.name == "login") {
+    if ( to.name == "login"){
+      next();
+    }
+    else if (userRole == "Администратор"){
+      next();
+    }
+    else if (to.name != "register" && userRole == "Менеджер"){
+    next();
+    }
+    else if (to.name != "register" && to.name !="creation" && userRole == "Рядовой сотрудник"){
+      next();
+    }
+    else{
+      alert("Доступ запрещен");
+      next("/")
+    }
+  }
+   else {
+    next("/login");
+  }
 });
 
 export default router;

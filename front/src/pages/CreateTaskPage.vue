@@ -2,36 +2,36 @@
     <form @submit.prevent="onFormSubmit">
 
     <div class="form-field">
-        <label for="phone">Задание<br/></label>
-        <textarea v-model="phone" id="phone" type="message" required> </textarea>
+        <label for="task">Задание<br/></label>
+        <textarea v-model="task" id="task" type="message" required> </textarea>
     </div>
 
     <div class="form-field">
-        <label for="password">Исполнитель<br/></label>
-        <select v-model="userId">
-        <option v-for="userItem in userList" :key="userItem.id" class="todo">
-            {{userItem.full_name}},{{userItem.id}}
+        <label for="performer">Исполнитель<br/></label>
+        <select v-model="performer" id="performer">
+        <option v-for="userItem in userList" :key="userItem.id">
+            {{userItem.full_name}}
         </option>
         </select>
     </div>
 
     <div class="form-field">
-        <label for="email">Контактное лицо (ID)<br/></label>
-        <select v-model="userId">
-        <option v-for="contPers in contractPersonsList" :key="contPers.id" class="todo">
-            {{contPers}}
+        <label for="contact">Контактное лицо (ID)<br/></label>
+        <select v-model="contact" id="contact">
+        <option v-for="contPers in contractPersonsList" :key="contPers.id">
+            {{contPers.full_name}}, {{contPers.legal_name}}
         </option>
         </select>
     </div>
 
     <div class="form-field">
-        <label for="full_name">Номер контракта (ID)<br/></label>
-        <input v-model="email" id="email" type="number">
+        <label for="contract">Номер контракта (ID)<br/></label>
+        <input v-model="contract" id="contract" type="number">
     </div>
 
     <div class="form-field">
-        <label for="phone">Приоритет<br/></label>
-        <select v-model="contract" class="todo">
+        <label for="priority">Приоритет<br/></label>
+        <select v-model="priority" id="priority">
                 <option>Высокий</option>
                 <option>Средний</option>
                 <option>Низкий</option>
@@ -39,8 +39,8 @@
     </div>
 
     <div class="form-field">
-        <label for="phone">Дата истечения срока<br/></label>
-        <input v-model="phone" id="phone" type="date" required>
+        <label for="date">Дата истечения срока<br/></label>
+        <input v-model="date" id="date" type="date" required>
     </div>
 
     <button class="submit-btn" type="submit">
@@ -50,8 +50,7 @@
 </template>
 
 <script>
-import { fetchUserList } from '@/netClient/dataService'
-import { fetchContactsList } from '@/netClient/dataService'
+import { fetchUserList,fetchContactsList, createTask} from '@/netClient/dataService'
 export default {
     name: 'HomePage',
     data: () =>({
@@ -77,6 +76,39 @@ export default {
                 console.error({ error });
             }
         },
+        async onFormSubmit(){
+            try {
+                for (let i=0;i<this.userList.length;i++){
+                    if(this.userList[i].full_name == this.performer) {
+                        this.performer = this.userList[i].id;
+                        break;
+                    }
+                }
+                for (let i=0;i<this.contractPersonsList.length;i++){
+                    if (this.contractPersonsList[i].full_name == String(this.contact).split(',')[0]) {
+                        this.contact = this.contractPersonsList[i].id;
+                        break;
+                    }
+                }
+                let result = await createTask(
+                    this.performer,
+                    this.contact,
+                    this.contract,
+                    this.task.trim(),
+                    this.priority,
+                    this.date
+                ,)
+                document.getElementById("performer").value = '';
+                document.getElementById("contact").value = '';
+                document.getElementById("contract").value = '';
+                document.getElementById("task").value = '';
+                document.getElementById("priority").value = '';
+                document.getElementById("date").value = '';
+                alert(result)
+            } catch (error) {
+                console.error({ error });
+            }
+        }
     }
 }
 </script>

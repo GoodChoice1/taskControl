@@ -34,12 +34,25 @@
   z-index: 100;
 }
 
-.form-field input  {
+.form-field input {
   border: 2px solid black;
   border-radius: 4px;
   padding: 4px 8px;
   margin: 5px;
-  height: 20px;
+}
+
+.form-field textarea  {
+  border: 2px solid black;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 5px;
+}
+
+.form-field select  {
+  border: 2px solid black;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 5px;
 }
 
 .submit-btn{

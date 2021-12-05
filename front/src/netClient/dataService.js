@@ -1,13 +1,13 @@
 import http from "@/netClient/config";
-const sha256 = require('js-sha256');
+const sha256 = require("js-sha256");
 
-export async function login(login,password) {
+export async function login(login, password) {
   try {
     password = sha256(password);
-    const responce =await http.post('/auth/login',{
-        login,
-        password
-    })
+    const responce = await http.post("/auth/login", {
+      login,
+      password,
+    });
     localStorage.login = login;
     localStorage.password = password;
     localStorage.userRole = responce.data;
@@ -17,13 +17,19 @@ export async function login(login,password) {
   }
 }
 
-export async function register(regLogin,regPassword,email,full_name,role,phone_number) {
+export async function register(
+  regLogin,
+  regPassword,
+  email,
+  full_name,
+  role,
+  phone_number
+) {
   try {
     regPassword = sha256(regPassword);
     let login = localStorage.login;
     let password = localStorage.password;
-    const responce =await http.post('/auth/register',
-    {
+    const responce = await http.post("/auth/register", {
       login,
       password,
       regLogin,
@@ -32,7 +38,7 @@ export async function register(regLogin,regPassword,email,full_name,role,phone_n
       full_name,
       role,
       phone_number,
-    })
+    });
     return responce.data;
   } catch (error) {
     console.log({ error });
@@ -42,14 +48,14 @@ export async function register(regLogin,regPassword,email,full_name,role,phone_n
 
 export async function fetchTaskListUndone() {
   try {
-    const responce =await http.get('/task/',{
+    const responce = await http.get("/task/", {
       headers: {
         login: localStorage.login,
-        password: localStorage.password
-      }
-    })
-    for (let i =0;i<responce.data.length;i++){
-      if (responce.data[i].completion_date) responce.data.splice(i,1);
+        password: localStorage.password,
+      },
+    });
+    for (let i = 0; i < responce.data.length; i++) {
+      if (responce.data[i].completion_date) responce.data.splice(i, 1);
     }
     return responce.data;
   } catch (error) {
@@ -60,14 +66,14 @@ export async function fetchTaskListUndone() {
 
 export async function fetchTaskListDone() {
   try {
-    const responce =await http.get('/task/',{
+    const responce = await http.get("/task/", {
       headers: {
         login: localStorage.login,
-        password: localStorage.password
-      }
-    })
-    for (let i =0;i<responce.data.length;i++){
-      if (!responce.data[i].completion_date) responce.data.splice(i,1);
+        password: localStorage.password,
+      },
+    });
+    for (let i = 0; i < responce.data.length; i++) {
+      if (!responce.data[i].completion_date) responce.data.splice(i, 1);
     }
     return responce.data;
   } catch (error) {
@@ -78,12 +84,12 @@ export async function fetchTaskListDone() {
 
 export async function fetchUserList() {
   try {
-    const responce =await http.get('/rest/users',{
+    const responce = await http.get("/rest/users", {
       headers: {
         login: localStorage.login,
-        password: localStorage.password
-      }
-    })
+        password: localStorage.password,
+      },
+    });
     return responce.data;
   } catch (error) {
     console.log({ error });
@@ -93,12 +99,12 @@ export async function fetchUserList() {
 
 export async function fetchContactsList() {
   try {
-    const responce =await http.get('/rest/contPersons',{
+    const responce = await http.get("/rest/contPersons", {
       headers: {
         login: localStorage.login,
-        password: localStorage.password
-      }
-    })
+        password: localStorage.password,
+      },
+    });
     return responce.data;
   } catch (error) {
     console.log({ error });
@@ -108,12 +114,45 @@ export async function fetchContactsList() {
 
 export async function fetchUrList() {
   try {
-    let responce =await http.get('/rest/orgs',{
+    let responce = await http.get("/rest/orgs", {
       headers: {
         login: localStorage.login,
-        password: localStorage.password
-      }
+        password: localStorage.password,
+      },
     });
+    return responce.data;
+  } catch (error) {
+    console.log({ error });
+    throw error;
+  }
+}
+
+export async function createTask(
+  person_id_performer,
+  contact_person_id,
+  contract_number,
+  task,
+  priority,
+  expiration_date
+) {
+  try {
+    let responce = await http.post(
+      "/task/",
+      {
+        person_id_performer,
+        contact_person_id,
+        contract_number,
+        task,
+        priority,
+        expiration_date
+      },
+      {
+        headers: {
+          login: localStorage.login,
+          password: localStorage.password,
+        },
+      }
+    );
     return responce.data;
   } catch (error) {
     console.log({ error });
