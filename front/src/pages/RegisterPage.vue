@@ -56,7 +56,7 @@ export default {
                     this.phone.trim()
                 );
                 document.getElementById("login").value = '';
-                document.getElementsByClassName("input").value = '';
+                document.getElementById("password").value = '';
                 document.getElementById("email").value = '';
                 document.getElementById("full_name").value = '';
                 document.getElementById("role").value = '';

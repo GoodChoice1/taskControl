@@ -1,4 +1,4 @@
-const { Router, response } = require("express");
+const { Router } = require("express");
 const { asyncHandler } = require("../middlewares/middlewares");
 const ErrorResponse = require("../classes/error-response");
 const { Client } = require("pg");

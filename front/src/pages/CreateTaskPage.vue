@@ -102,6 +102,12 @@ export default {
                     this.priority,
                     date
                 ,)
+                document.getElementById("task").value = '';
+                document.getElementById("performer").value = '';
+                document.getElementById("contact").value = '';
+                document.getElementById("contract").value = '';
+                document.getElementById("priority").value = '';
+                document.getElementById("date").value = '';
                 alert(result)
             } catch (error) {
                 console.error({ error });
