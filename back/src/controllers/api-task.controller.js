@@ -10,6 +10,9 @@ function initRoutes() {
   router.get("/:id", asyncHandler(getTaskById));
   router.post("/", asyncHandler(createTask));
   router.patch("/:id", asyncHandler(changeTask));
+  router.patch("/complete/:id",asyncHandler(completeTask))
+  router.get("/isAuthor/:id",asyncHandler(isAuthor))
+  router.delete("/:id",asyncHandler(deleteTask))
 }
 
 function dateToString(date) {
@@ -158,7 +161,21 @@ async function changeTask(req, res, next) {
 
   if (result.length == 0) throw new ErrorResponse("Таска нет", 404);
 
-  query = `UPDATE tasks SET completion_date = ${req.body.completion_date} WHERE id = ${req.params.id}`;
+  let author = '';
+  if (req.body.person_id_author){
+    author ='person_id_author = '+ req.body.person_id_author+','
+  }
+  query = `UPDATE tasks SET ` + author;
+  let query2 = `
+  person_id_performer = ${req.body.person_id_performer},
+  contact_person_id = ${req.body.contact_person_id},
+  contract_number = ${req.body.contract_number},
+  task = '${req.body.task}',
+  priority = '${req.body.priority}',
+  expiration_date = ${req.body.date}
+  WHERE id = ${req.params.id}`
+  query = query + query2
+  console.log(query)
   try {
     result = await client.query(query);
   } catch (err) {
@@ -216,6 +233,97 @@ async function createTask(req, res, next) {
     client.end();
   }
   res.status(200).json("Insert succesfull");
+}
+
+async function completeTask(req,res,next) {
+  const client = new Client({
+    port: 5432,
+    host: "localhost",
+    database: "myPracticeDb",
+    user: req.headers.login,
+    password: req.headers.password,
+  });
+
+  try {
+    client.connect();
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+  try {
+    var result = await client.query("select current_date");
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+
+  let realDate =  dateToString(result.rows[0].current_date)
+
+  let query = `UPDATE tasks SET completion_date = '${realDate}' WHERE id = ${req.params.id}`;
+  try {
+    result = await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  } finally {
+    client.end();
+  }
+  console.log(result.rows)
+  res.status(200).json("Update succesfull");
+}
+
+async function isAuthor(req,res,next) {
+  const client = new Client({
+    port: 5432,
+    host: "localhost",
+    database: "myPracticeDb",
+    user: req.headers.login,
+    password: req.headers.password.toString(),
+  });
+
+  try {
+    client.connect();
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+
+  let query = `SELECT (current_user = (SELECT login FROM tasks t
+    JOIN workers w ON w.id = t.person_id_author
+    WHERE t.id = ${req.params.id} )) AS resp`
+
+  try {
+    var result = await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  } finally {
+    client.end();
+  }
+
+  res.status(200).json(result.rows[0].resp);
+}
+
+async function deleteTask(req,res,next) {
+  const client = new Client({
+    port: 5432,
+    host: "localhost",
+    database: "myPracticeDb",
+    user: req.headers.login,
+    password: req.headers.password.toString(),
+  });
+
+  try {
+    client.connect();
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+
+  let query = `DELETE FROM tasks WHERE id = ${req.params.id}`
+  try {
+    var result = await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  } finally {
+    client.end();
+  }
+
+  res.status(200).json(result.rows[0]);
 }
 
 initRoutes();

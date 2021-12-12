@@ -10,6 +10,7 @@ function initRoutes() {
   router.get("/report",asyncHandler(getReport));
   router.get("/contPersons",asyncHandler(getContacts));
   router.get("/users",asyncHandler(getUsers));
+  router.get("/allusers",asyncHandler(getUsersAll));
 }
 
 async function getAllOrgs(req, res, next) {
@@ -123,7 +124,7 @@ async function getContacts(req, res, next) {
 
   let result = [];
   let query = `
-  SELECT * FROM contact_persons
+  SELECT contact_persons.id, full_name, legal_name FROM contact_persons
   JOIN persons p ON p.id = person_id
   JOIN organizations o ON o.id = org_id
   `;
@@ -195,9 +196,42 @@ async function getUsers(req, res, next) {
 
   let result = [];
   let query = `
-  SELECT * FROM workers
+  SELECT workers.id, full_name FROM workers
   JOIN persons p ON p.id = person_id
   WHERE work_position = 'Рядовой сотрудник' OR login = '${req.headers.login}'
+  `;
+  try {
+    result = await client.query(query);
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  } finally {
+    client.end();
+  }
+  result = result.rows;
+  if (result.length == 0) throw new ErrorResponse("Нет контактных лиц", 404);
+  res.status(200).json(result);
+}
+
+
+async function getUsersAll(req, res, next) {
+  const client = new Client({
+    port: 5432,
+    host: "localhost",
+    database: "myPracticeDb",
+    user: req.headers.login,
+    password: req.headers.password,
+  });
+
+  try {
+    client.connect();
+  } catch (err) {
+    throw new ErrorResponse(err, 400);
+  }
+
+  let result = [];
+  let query = `
+  SELECT workers.id, full_name FROM workers
+  JOIN persons p ON p.id = person_id
   `;
   try {
     result = await client.query(query);
