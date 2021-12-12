@@ -44,6 +44,14 @@
 import { register } from "@/netClient/dataService"
 export default {
     name: 'HomePage',
+    data: () =>({
+        regLogin: '',
+        regPassword: '',
+        email: '',
+        full_name: '',
+        role: '',
+        phone: '',
+    }),
     methods: {
         async onFormSubmit(){
             try {

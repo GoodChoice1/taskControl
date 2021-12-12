@@ -54,7 +54,7 @@ export async function fetchTaskListUndone() {
         password: sessionStorage.password,
       },
     });
-    for (let i = 0; i < responce.data.length; i++) {
+    for (let i = responce.data.length - 1; i > -1; i--) {
       if (responce.data[i].completion_date) responce.data.splice(i, 1);
     }
     return responce.data;
@@ -72,7 +72,7 @@ export async function fetchTaskListDone() {
         password: sessionStorage.password,
       },
     });
-    for (let i = responce.data.length-1; i > -1; i--) {
+    for (let i = responce.data.length - 1; i > -1; i--) {
       if (!responce.data[i].completion_date) responce.data.splice(i, 1);
     }
     return responce.data;
@@ -84,12 +84,22 @@ export async function fetchTaskListDone() {
 
 export async function fetchUserList() {
   try {
-    const responce = await http.get("/rest/users", {
-      headers: {
-        login: sessionStorage.login,
-        password: sessionStorage.password,
-      },
-    });
+    let responce = "";
+    if (sessionStorage.userRole != "Администратор") {
+      responce = await http.get("/rest/users", {
+        headers: {
+          login: sessionStorage.login,
+          password: sessionStorage.password,
+        },
+      });
+    } else {
+      responce = await http.get("/rest/allusers", {
+        headers: {
+          login: sessionStorage.login,
+          password: sessionStorage.password,
+        },
+      });
+    }
     return responce.data;
   } catch (error) {
     console.log({ error });
@@ -144,7 +154,7 @@ export async function createTask(
         contract_number,
         task,
         priority,
-        expiration_date
+        expiration_date,
       },
       {
         headers: {
@@ -162,14 +172,47 @@ export async function createTask(
 
 export async function getReport(left, right) {
   try {
-    let responce = await http.get(
-      "/rest/report",
+    let responce = await http.get("/rest/report", {
+      headers: {
+        login: sessionStorage.login,
+        password: sessionStorage.password,
+        left,
+        right,
+      },
+    });
+    return responce.data.result;
+  } catch (error) {
+    console.log({ error });
+    throw error;
+  }
+}
+
+export async function fetchTaskById() {
+  try {
+    let responce = await http.get("/task/" + sessionStorage.id, {
+      headers: {
+        login: sessionStorage.login,
+        password: sessionStorage.password,
+      },
+    });
+    return responce.data;
+  } catch (error) {
+    console.log({ error });
+    throw error;
+  }
+}
+
+export async function updateTaskById(task) {
+  try {
+    let responce = await http.patch(
+      "/task/" + sessionStorage.id,
+      {
+        ...task,
+      },
       {
         headers: {
           login: sessionStorage.login,
           password: sessionStorage.password,
-          left,
-          right
         },
       }
     );
@@ -180,10 +223,11 @@ export async function getReport(left, right) {
   }
 }
 
-export async function fetchTaskById() {
+export async function completeTask() {
   try {
-    let responce = await http.get(
-      "/task/" + sessionStorage.id,
+    let responce = await http.patch(
+      "/task/complete/" + sessionStorage.id,
+      {},
       {
         headers: {
           login: sessionStorage.login,
@@ -191,7 +235,37 @@ export async function fetchTaskById() {
         },
       }
     );
-    console.warn(responce.data)
+    return responce.data;
+  } catch (error) {
+    console.log({ error });
+    throw error;
+  }
+}
+
+export async function isUserAuthor() {
+  try {
+    let responce = await http.get("/task/isAuthor/" + sessionStorage.id, {
+      headers: {
+        login: sessionStorage.login,
+        password: sessionStorage.password,
+      },
+    });
+    return responce.data;
+  } catch (error) {
+    console.log({ error });
+    throw error;
+  }
+}
+
+export async function deleteTask() {
+  try {
+    let responce = await http.delete("/task/" + sessionStorage.id, {
+      headers: {
+        login: sessionStorage.login,
+        password: sessionStorage.password,
+      },
+    });
+    sessionStorage.removeItem('id')
     return responce.data;
   } catch (error) {
     console.log({ error });

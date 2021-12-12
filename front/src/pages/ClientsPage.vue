@@ -11,7 +11,9 @@
                 </ul>
                 <ul>
                     <li v-for="contract in urItem.contractList" :key="contract.contract_number">
-                        {{contract.contract_number}}, {{contract.description}}
+                        {{contract.description}}
+                        <br/>
+                        Номер контракта: {{contract.contract_number}}, 
                         <ul>
                             <li v-for="equipment in contract.eqList" :key="equipment.id">
                                 {{equipment.name}},{{equipment.serial_number}}
