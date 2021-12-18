@@ -48,11 +48,9 @@
 </template>
 
 <script>
-import {
-  fetchUserList,
-  fetchContactsList,
-  createTask,
-} from "@/netClient/dataService";
+import { fetchContactsList } from "@/netClient/services/clientService";
+import { fetchUserList } from "@/netClient/services/userService";
+import { createTask } from "@/netClient/services/taskService";
 export default {
   name: "HomePage",
   data: () => ({

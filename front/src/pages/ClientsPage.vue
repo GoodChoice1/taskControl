@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { fetchUrList } from '@/netClient/dataService'
+import { fetchUrList } from '@/netClient/services/clientService'
 export default {
     name: 'HomePage',
     data: () =>({

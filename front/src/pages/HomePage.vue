@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { fetchTaskListUndone } from "@/netClient/dataService";
+import { fetchTaskListUndone } from "@/netClient/services/taskService";
 export default {
   name: "HomePage",
   data: () => ({

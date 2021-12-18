@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { getReport } from "@/netClient/dataService";
+import { getReport } from "@/netClient/services/userService";
 export default {
   name: "ReportPage",
   data: () => ({

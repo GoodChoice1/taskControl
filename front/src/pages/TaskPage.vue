@@ -122,15 +122,10 @@
 </template>
 
 <script>
-import {
-  fetchUserList,
-  fetchContactsList,
-  updateTaskById,
-  fetchTaskById,
-  completeTask,
-  isUserAuthor,
-  deleteTask,
-} from "@/netClient/dataService";
+import { fetchContactsList,} from "@/netClient/services/clientService";
+import { fetchUserList, } from "@/netClient/services/userService";
+import { updateTaskById, fetchTaskById,isUserAuthor, completeTask, deleteTask,} from "@/netClient/services/taskService";
+
 export default {
   name: "HomePage",
   data: () => ({

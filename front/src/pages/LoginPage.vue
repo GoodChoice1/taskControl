@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { login } from "@/netClient/dataService";
+import { login } from '@/netClient/services/authService';
 
 export default {
   name: "LoginPage",

@@ -80,3 +80,9 @@
 .select{
   width: 220px;
 }
+
+body{
+  margin: 5px;
+  background-color:#b3cdff;
+  height: 100%;
+}
