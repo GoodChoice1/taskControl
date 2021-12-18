@@ -1,4 +1,5 @@
 const ErrorResponse = require("../classes/error-response");
+const { Client } = require("pg");
 
 const asyncHandler = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -18,9 +19,21 @@ const errorHandler = (err, _req, res, _next) => {
   });
 };
 
+const connectionHandler = async (req, res, next) => {
+  const client = new Client({
+    port: 5432,
+    host: "localhost",
+    database: "myPracticeDb",
+    user: req.headers.login,
+    password: req.headers.password,
+  });
+  req.client = client;
+  next();
+};
 
 module.exports = {
   asyncHandler,
   notFound,
   errorHandler,
+  connectionHandler,
 };

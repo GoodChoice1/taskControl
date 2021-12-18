@@ -4,7 +4,7 @@ const cors = require("cors");
 const app = express();
 const apiTaskController = require("./controllers/api-task.controller");
 const apiRestController = require("./controllers/api-rest.controller");
-const apiAuthController = require("./controllers/api-auth.controller")
+const apiAuthController = require("./controllers/api-auth.controller");
 const { notFound, errorHandler } = require("./middlewares/middlewares");
 
 app.use(cors());
